@@ -1,4 +1,4 @@
-libopencm3.bak
+*.bin
 *.d
 *.elf
-*.bin
+*.o
