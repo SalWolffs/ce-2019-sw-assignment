@@ -1,1 +1,4 @@
 libopencm3.bak
+*.d
+*.elf
+*.bin
