@@ -48,16 +48,16 @@ m`:let @e=(@e+19)%32:let @f=(@f+24)%32
 
 jj0v}k$h"sy
 s: switch to x14, x15 active
-o    stmia sp, {r12,r13}
-    ldmdb sp, {r12,r13} 
-        # now r12=x14, r13=x15
+o    stmia sp, {r12,r14}
+    ldmdb sp, {r12,r14} 
+        # now r12=x14, r14=x15
 k
 
 jj0v}k$h"ty
-t: switch back to x12, x13
-o    stmdb sp, {r12,r13} 
-    ldmia sp, {r12,r13} 
-        # now r12=x12, r13=x13
+t: switch back to x12, x14
+o    stmdb sp, {r12,r14} 
+    ldmia sp, {r12,r14} 
+        # now r12=x12, r14=x13
 k
 
 jj0v}k$h"gy
