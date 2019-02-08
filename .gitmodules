@@ -1,4 +1,3 @@
 [submodule "libopencm3"]
 	path = libopencm3
 	url = https://github.com/libopencm3/libopencm3.git 
-	pushurl = git@github.com:libopencm3/libopencm3
