@@ -33,7 +33,7 @@ int main(void)
   unsigned char ss0[GROUP_GE_PACKEDBYTES];
   unsigned char ss1[GROUP_GE_PACKEDBYTES];
 
-  //send_USART_str((unsigned char*)"\n============ IGNORE OUTPUT BEFORE THIS LINE ============\n");
+  //send_USART_str((unsigned char*)"\r============ IGNORE OUTPUT BEFORE THIS LINE ============\n");
 
   crypto_scalarmult_base(pk0, sk0); 
   crypto_scalarmult_base(pk1, sk1); 

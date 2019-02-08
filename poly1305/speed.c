@@ -24,7 +24,7 @@ int main(void)
   DWT_CYCCNT = 0;
   DWT_CTRL |= DWT_CTRL_CYCCNTENA;
 
-  send_USART_str((unsigned char*)"\n============ IGNORE OUTPUT BEFORE THIS LINE ============\n");
+  send_USART_str((unsigned char*)"\r============ IGNORE OUTPUT BEFORE THIS LINE ============\n");
   
   oldcount = DWT_CYCCNT;
   crypto_onetimeauth_poly1305(tag,msg,INLEN,key);

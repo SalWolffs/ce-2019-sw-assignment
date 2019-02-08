@@ -56,7 +56,7 @@ int main(void)
   usart_setup(115200);
   char outstr[20];
 
-  send_USART_str((unsigned char*)"\n============ IGNORE OUTPUT BEFORE THIS LINE ============\n");
+  send_USART_str((unsigned char*)"\r============ IGNORE OUTPUT BEFORE THIS LINE ============\n");
   
   crypto_onetimeauth_poly1305(tag,msg,INLEN,key);
 
