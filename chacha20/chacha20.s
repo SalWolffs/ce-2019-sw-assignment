@@ -59,8 +59,8 @@ quadround:
     add r9, r9, r14, ror #24
     eor r5, r5, r9, ror #20
 
-    stmia sp, {r12,r13}
-    ldmdb sp, {r12,r13} 
+    stmia sp, {r12,r14}
+    ldmdb sp, {r12,r14} 
         # now r12=x14, r14=x15
     add r2, r2, r6, ror #0
     eor r12, r12, r2, ror #0
@@ -102,8 +102,8 @@ quadround:
     add r10, r10, r14, ror #16
     eor r5, r5, r10, ror #1
 
-    stmdb sp, {r12,r13} 
-    ldmia sp, {r12,r13} 
+    stmdb sp, {r12,r14} 
+    ldmia sp, {r12,r14} 
         # now r12=x12, r14=x13
     add r1, r1, r6, ror #19
     eor r12, r12, r1, ror #8
@@ -141,8 +141,8 @@ quadround:
     add r9, r9, r14, ror #8
     eor r5, r5, r9, ror #14
 
-    stmia sp, {r12,r13}
-    ldmdb sp, {r12,r13} 
+    stmia sp, {r12,r14}
+    ldmdb sp, {r12,r14} 
         # now r12=x14, r14=x15
     add r2, r2, r6, ror #6
     eor r12, r12, r2, ror #16
@@ -181,12 +181,12 @@ quadround:
     add r10, r10, r14, ror #0
     eor r5, r5, r10, ror #27
 
-    stmdb sp, {r12,r13} 
+    stmdb sp, {r12,r14} 
     ldr r12, [sp, #-12] 
         # update and test the loop counter between switching.
     subs r12, #1
     str r12, [sp, #-12]
-    ldmia sp, {r12,r13} 
+    ldmia sp, {r12,r14} 
         # now r12=x12, r14=x13
     add r1, r1, r6, ror #25
     eor r12, r12, r1, ror #24
