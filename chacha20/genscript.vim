@@ -8,14 +8,19 @@ m: meta-macro, loads the macro whose header is under the cursor and positions yo
 
 jj0v}k$h"qy
 q: quarterround
-o    add Ra, Rb, rol #=(@e+0)%32
-    eor Rd, Ra, ror #=(@f+0)%32
-    add Rc, Rd, rol #=(@f+8)%32
-    eor Rb, Rc, ror #=(@e+0)%32
-    add Ra, Rb, rol #=(@e+12)%32
-    eor Rd, Ra, ror #=(@f+8)%32
-    add Rc, Rd, rol #=(@f+24)%32
-    eor Rb, Rc, ror #=(@e+12)%32V7k
+A
+    add Ra, Ra, Rb, ror #=(0+@e)%32
+    eor Rd, Rd, Ra, ror #=(32-@f)%32
+    add Rc, Rc, Rd, ror #=(16+@f)%32
+    eor Rb, Rb, Rc, ror #=(32-@e)%32
+    add Ra, Ra, Rb, ror #=(12+@e)%32
+    eor Rd, Rd, Ra, ror #=(48-@f)%32
+    add Rc, Rc, Rd, ror #=(24+@f)%32
+    eor Rb, Rb, Rc, ror #=(52-@e)%32V7k
+
+jj0"ay$
+a: ad-hoc fix for rol not being a valid inline shift op
+m`"ndwr-:let @n=(32-@n)%32+32"nP``
 
 jj0v}k$h"vy
 v: vertical round
@@ -44,18 +49,21 @@ m`:let @e=(@e+19)%32:let @f=(@f+24)%32
 jj0v}k$h"sy
 s: switch to x14, x15 active
 o    stmia sp, {r12,r13}
-    ldmdb sp, {r12,r13} # now r12=x14, r13=x15
+    ldmdb sp, {r12,r13} 
+        # now r12=x14, r13=x15
 k
 
 jj0v}k$h"ty
 t: switch back to x12, x13
 o    stmdb sp, {r12,r13} 
-    ldmia sp, {r12,r13} # now r12=x12, r13=x13
+    ldmia sp, {r12,r13} 
+        # now r12=x12, r13=x13
 k
 
 jj0v}k$h"gy
 g: generate doubleround
-:let @r=0@v@i@v@i@s@v@i@v@ja# switch to diagonal.
+:let @r=0@v@i@v@i@s@v@i@v@ja
+# switch to diagonal.
 # note that quarterrounds are independent: we're doing the last one
 # first, because it's loaded. Then the first, then load x12, x13 and
 # do the second and third:@d@i@d@i@t@d@i@d@j
