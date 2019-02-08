@@ -14,6 +14,7 @@ let
       sha256 = "17m91skxbh1v59nl94wzwg7q29hagdg5vi891cjpa7zsv36vhc5j";
     };
 
+    enableParellelBuilding = true;
     nativeBuildInputs = [ python ];
     preBuild = ''
       patchShebangs scripts
