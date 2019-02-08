@@ -42,166 +42,168 @@ quadround:
 # Note: quadround, as in two full vertical and two full diagonal rounds
 # This'll be a slog, so it's mostly script-generated
     add r0, r0, r4, ror #0
-    eor r12, r12, r0, ror #0
-    add r8, r8, r12, ror #8
+    eor x12, x12, r0, ror #0
+    add r8, r8, x12, ror #16
     eor r4, r4, r8, ror #0
     add r0, r0, r4, ror #12
-    eor r12, r12, r0, ror #24
-    add r8, r8, r12, ror #24
+    eor x12, x12, r0, ror #16
+    add r8, r8, x12, ror #24
     eor r4, r4, r8, ror #20
 
     add r1, r1, r5, ror #0
-    eor r14, r14, r1, ror #0
-    add r9, r9, r14, ror #8
+    eor x13, x13, r1, ror #0
+    add r9, r9, x13, ror #16
     eor r5, r5, r9, ror #0
     add r1, r1, r5, ror #12
-    eor r14, r14, r1, ror #24
-    add r9, r9, r14, ror #24
+    eor x13, x13, r1, ror #16
+    add r9, r9, x13, ror #24
     eor r5, r5, r9, ror #20
 
-    stmia sp, {r12,r14}
-    ldmdb sp, {r12,r14} 
-        # now r12=x14, r14=x15
+    stmia sp, {r12,r13}
+    ldmdb sp, {r12,r13} 
+        # now r12=x14, r13=x15
     add r2, r2, r6, ror #0
-    eor r12, r12, r2, ror #0
-    add r10, r10, r12, ror #8
+    eor x14, x14, r2, ror #0
+    add r10, r10, x14, ror #16
     eor r6, r6, r10, ror #0
     add r2, r2, r6, ror #12
-    eor r12, r12, r2, ror #24
-    add r10, r10, r12, ror #24
+    eor x14, x14, r2, ror #16
+    add r10, r10, x14, ror #24
     eor r6, r6, r10, ror #20
 
     add r3, r3, r7, ror #0
-    eor r14, r14, r3, ror #0
-    add r11, r11, r14, ror #8
+    eor x15, x15, r3, ror #0
+    add r11, r11, x15, ror #16
     eor r7, r7, r11, ror #0
     add r3, r3, r7, ror #12
-    eor r14, r14, r3, ror #24
-    add r11, r11, r14, ror #24
+    eor x15, x15, r3, ror #16
+    add r11, r11, x15, ror #24
     eor r7, r7, r11, ror #20
+
 # switch to diagonal.
 # note that quarterrounds are independent: we're doing the last one
 # first, because it's loaded. Then the first, then load x12, x13 and
 # do the second and third:
     add r3, r3, r4, ror #19
-    eor r12, r12, r3, ror #8
-    add r9, r9, r12, ror #0
+    eor x14, x14, r3, ror #8
+    add r9, r9, x14, ror #8
     eor r4, r4, r9, ror #13
     add r3, r3, r4, ror #31
-    eor r12, r12, r3, ror #0
-    add r9, r9, r12, ror #16
+    eor x14, x14, r3, ror #24
+    add r9, r9, x14, ror #16
     eor r4, r4, r9, ror #1
 
     add r0, r0, r5, ror #19
-    eor r14, r14, r0, ror #8
-    add r10, r10, r14, ror #0
+    eor x15, x15, r0, ror #8
+    add r10, r10, x15, ror #8
     eor r5, r5, r10, ror #13
     add r0, r0, r5, ror #31
-    eor r14, r14, r0, ror #0
-    add r10, r10, r14, ror #16
+    eor x15, x15, r0, ror #24
+    add r10, r10, x15, ror #16
     eor r5, r5, r10, ror #1
 
-    stmdb sp, {r12,r14} 
-    ldmia sp, {r12,r14} 
-        # now r12=x12, r14=x13
+    stmdb sp, {r12,r13} 
+    ldmia sp, {r12,r13} 
+        # now r12=x12, r13=x13
     add r1, r1, r6, ror #19
-    eor r12, r12, r1, ror #8
-    add r11, r11, r12, ror #0
+    eor x12, x12, r1, ror #8
+    add r11, r11, x12, ror #8
     eor r6, r6, r11, ror #13
     add r1, r1, r6, ror #31
-    eor r12, r12, r1, ror #0
-    add r11, r11, r12, ror #16
+    eor x12, x12, r1, ror #24
+    add r11, r11, x12, ror #16
     eor r6, r6, r11, ror #1
 
     add r2, r2, r7, ror #19
-    eor r14, r14, r2, ror #8
-    add r8, r8, r14, ror #0
+    eor x13, x13, r2, ror #8
+    add r8, r8, x13, ror #8
     eor r7, r7, r8, ror #13
     add r2, r2, r7, ror #31
-    eor r14, r14, r2, ror #0
-    add r8, r8, r14, ror #16
+    eor x13, x13, r2, ror #24
+    add r8, r8, x13, ror #16
     eor r7, r7, r8, ror #1
 # second doubleround, to realign x12,x13,x14,x15
     add r0, r0, r4, ror #6
-    eor r12, r12, r0, ror #16
-    add r8, r8, r12, ror #24
+    eor x12, x12, r0, ror #16
+    add r8, r8, x12, ror #0
     eor r4, r4, r8, ror #26
     add r0, r0, r4, ror #18
-    eor r12, r12, r0, ror #8
-    add r8, r8, r12, ror #8
+    eor x12, x12, r0, ror #0
+    add r8, r8, x12, ror #8
     eor r4, r4, r8, ror #14
 
     add r1, r1, r5, ror #6
-    eor r14, r14, r1, ror #16
-    add r9, r9, r14, ror #24
+    eor x13, x13, r1, ror #16
+    add r9, r9, x13, ror #0
     eor r5, r5, r9, ror #26
     add r1, r1, r5, ror #18
-    eor r14, r14, r1, ror #8
-    add r9, r9, r14, ror #8
+    eor x13, x13, r1, ror #0
+    add r9, r9, x13, ror #8
     eor r5, r5, r9, ror #14
 
-    stmia sp, {r12,r14}
-    ldmdb sp, {r12,r14} 
-        # now r12=x14, r14=x15
+    stmia sp, {r12,r13}
+    ldmdb sp, {r12,r13} 
+        # now r12=x14, r13=x15
     add r2, r2, r6, ror #6
-    eor r12, r12, r2, ror #16
-    add r10, r10, r12, ror #24
+    eor x14, x14, r2, ror #16
+    add r10, r10, x14, ror #0
     eor r6, r6, r10, ror #26
     add r2, r2, r6, ror #18
-    eor r12, r12, r2, ror #8
-    add r10, r10, r12, ror #8
+    eor x14, x14, r2, ror #0
+    add r10, r10, x14, ror #8
     eor r6, r6, r10, ror #14
 
     add r3, r3, r7, ror #6
-    eor r14, r14, r3, ror #16
-    add r11, r11, r14, ror #24
+    eor x15, x15, r3, ror #16
+    add r11, r11, x15, ror #0
     eor r7, r7, r11, ror #26
     add r3, r3, r7, ror #18
-    eor r14, r14, r3, ror #8
-    add r11, r11, r14, ror #8
+    eor x15, x15, r3, ror #0
+    add r11, r11, x15, ror #8
     eor r7, r7, r11, ror #14
+
 # switch to diagonal.
     add r3, r3, r4, ror #25
-    eor r12, r12, r3, ror #24
-    add r9, r9, r12, ror #16
+    eor x14, x14, r3, ror #24
+    add r9, r9, x14, ror #24
     eor r4, r4, r9, ror #7
     add r3, r3, r4, ror #5
-    eor r12, r12, r3, ror #16
-    add r9, r9, r12, ror #0
+    eor x14, x14, r3, ror #8
+    add r9, r9, x14, ror #0
     eor r4, r4, r9, ror #27
 
     add r0, r0, r5, ror #25
-    eor r14, r14, r0, ror #24
-    add r10, r10, r14, ror #16
+    eor x15, x15, r0, ror #24
+    add r10, r10, x15, ror #24
     eor r5, r5, r10, ror #7
     add r0, r0, r5, ror #5
-    eor r14, r14, r0, ror #16
-    add r10, r10, r14, ror #0
+    eor x15, x15, r0, ror #8
+    add r10, r10, x15, ror #0
     eor r5, r5, r10, ror #27
 
-    stmdb sp, {r12,r14} 
+    stmdb sp, {r12,r13} 
     ldr r12, [sp, #-12] 
         # update and test the loop counter between switching.
     subs r12, #1
     str r12, [sp, #-12]
-    ldmia sp, {r12,r14} 
-        # now r12=x12, r14=x13
+    ldmia sp, {r12,r13} 
+        # now r12=x12, r13=x13
     add r1, r1, r6, ror #25
-    eor r12, r12, r1, ror #24
-    add r11, r11, r12, ror #16
+    eor x12, x12, r1, ror #24
+    add r11, r11, x12, ror #24
     eor r6, r6, r11, ror #7
     add r1, r1, r6, ror #5
-    eor r12, r12, r1, ror #16
-    add r11, r11, r12, ror #0
+    eor x12, x12, r1, ror #8
+    add r11, r11, x12, ror #0
     eor r6, r6, r11, ror #27
 
     add r2, r2, r7, ror #25
-    eor r14, r14, r2, ror #24
-    add r8, r8, r14, ror #16
+    eor x13, x13, r2, ror #24
+    add r8, r8, x13, ror #24
     eor r7, r7, r8, ror #7
     add r2, r2, r7, ror #5
-    eor r14, r14, r2, ror #16
-    add r8, r8, r14, ror #0
+    eor x13, x13, r2, ror #8
+    add r8, r8, x13, ror #0
     eor r7, r7, r8, ror #27
 
     mov r4, r4, ror #12
