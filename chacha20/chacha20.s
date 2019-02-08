@@ -6,10 +6,10 @@
 chacha20_core_asm:
     push {r0-r12,lr} 
     # store args as well as everything we need to restore
-    # lr==r14. We'll be using it as a general-purpose register
+    # Note: lr==r14. We'll be using it as a general-purpose register
     # minor gripe: this'd be a bit neater if sp were r14
     ldm r1, {r10-r12,r14} 
-    # load values from instream
+    # load values from instream: in+0, in+4, in+8, in+12, aka x14,x15,x12,x13
     mov r9, #5 
     # initialize loop counter
     push {r9-r12,r14} 
@@ -19,10 +19,18 @@ chacha20_core_asm:
     # with lower addresses within a single push/pop/ldm/stm
     add sp, #12
     # so now we're pointing in the middle of the stack. Legend:
-    # +4 x13 
-    # sp x12 ^ IA
-    # -4 x15 v DB
-    # -8 x14 
+    # +60 lr   return address
+    # +56 r12 ---- callee-stored ----
+    # ... ...       ...........
+    # +24 r4  ---- callee-stored ----
+    # +20 r3  (c)
+    # +16 r2  (k)
+    # +12 r1  (in)
+    # +8  r0  (out)
+    # +4  x13 
+    # sp  x12 ^ IA
+    # -4  x15 v DB
+    # -8  x14 
     # -12 loop counter
     ldm r2, {r4-r11} 
     # load keyvalues. They'll stay there during the loop
