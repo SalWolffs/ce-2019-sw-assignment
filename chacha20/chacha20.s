@@ -234,5 +234,6 @@ quadround:
     # We're done, 20 rounds executed, added to original, and written to output.
     # restore registers and return 0:
     pop {r4-r12,lr}
+    mov r0, #0
     bx lr
 
