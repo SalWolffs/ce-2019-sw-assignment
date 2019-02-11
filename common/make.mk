@@ -7,7 +7,7 @@ LD		= $(PREFIX)-gcc
 OBJCOPY	= $(PREFIX)-objcopy
 OBJDUMP	= $(PREFIX)-objdump
 GDB		= $(PREFIX)-gdb
-OPENCM3_DIR = ../libopencm3
+OPENCM3_DIR ?= ../libopencm3
 
 CFLAGS		+= -O3 \
 		   -Wall -Wextra -Wimplicit-function-declaration \
