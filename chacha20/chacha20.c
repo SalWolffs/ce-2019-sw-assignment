@@ -153,7 +153,7 @@ int crypto_stream_chacha20(unsigned char *c,unsigned long long clen, const unsig
   for (i = 8;i < 16;++i) in[i] = 0;
 
   while (clen >= 64) {
-    chacha20_core_asm(c,in,kcopy,sigma);
+    crypto_core_chacha20(c,in,kcopy,sigma);
 
     u = 1;
     for (i = 8;i < 16;++i) {
@@ -167,7 +167,7 @@ int crypto_stream_chacha20(unsigned char *c,unsigned long long clen, const unsig
   }
 
   if (clen) {
-    chacha20_core_asm(block,in,kcopy,sigma);
+    crypto_core_chacha20(block,in,kcopy,sigma);
     for (i = 0;i < clen;++i) c[i] = block[i];
   }
   return 0;

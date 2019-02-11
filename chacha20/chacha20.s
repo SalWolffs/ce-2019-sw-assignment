@@ -210,7 +210,7 @@ quadround:
     mov r5, r5, ror #12
     mov r6, r6, ror #12
     mov r7, r7, ror #12
-    beq quadround
+    bne quadround
 
 # TODO: optimize this bit, if possible
     # we can't do the additions in one or two sets, so split it in 3 batches of 6
