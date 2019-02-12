@@ -253,10 +253,10 @@ quadround:
 
     pop {r0-r3} 
         # x12-x15       NB: sp+=4*4, back at loop-sp
-    add sp, #24 
+    add sp, #8
         # back at function entry push sp, skip args and stale x12,x13
 
-    ldr r14, [sp, #-12] 
+    ldr r14, [sp, #4] 
         # arg:in
     ldm r14, {r6-r9} 
         # j14,j15,j12,j13
@@ -268,7 +268,6 @@ quadround:
     
     # We're done, 20 rounds executed, added to original, and written to output.
     # restore registers and return 0:
-    pop {r4-r12,lr}
-    mov r0, #0
+    pop {r0-r12,lr}
     bx lr
 
