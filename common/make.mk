@@ -39,6 +39,9 @@ lib:
 %.elf: %.o $(OBJS) $(LDSCRIPT)
 	$(LD) -o $(*).elf $(*).o $(OBJS) $(LDFLAGS) -l$(LIBNAME)
 
+%.lst: %.elf
+	$(OBJDUMP) -d $< > $@
+
 %.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 

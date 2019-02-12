@@ -5,8 +5,8 @@ ARCH_FLAGS = -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
 DEFINES    = -DSTM32F4
 OBJS       = stm32f4_wrapper.o
 
-all: chacha20test.bin \
-		 chacha20speed.bin
+all: chacha20test.bin chacha20test.lst \
+		 chacha20speed.bin chacha20speed.lst
 
 
 chacha20test.elf: chacha20.o chacha20.s chacha20.h test.o $(OBJS) $(LDSCRIPT)

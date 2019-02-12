@@ -5,8 +5,8 @@ ARCH_FLAGS = -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
 DEFINES    = -DSTM32F4
 OBJS       = stm32f4_wrapper.o
 
-all: ecdh25519test.bin \
-		 ecdh25519speed.bin
+all: ecdh25519test.bin ecdh25519test.lst  \
+		 ecdh25519speed.bin ecdh25519speed.lst
 
 
 ecdh25519test.elf: fe25519.o fe25519.h group.o group.h smult.o smult.h test.o $(OBJS) $(LDSCRIPT)

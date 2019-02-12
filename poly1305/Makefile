@@ -5,8 +5,8 @@ ARCH_FLAGS = -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
 DEFINES    = -DSTM32F4
 OBJS       = stm32f4_wrapper.o
 
-all: poly1305test.bin \
- 		 poly1305speed.bin
+all: poly1305test.bin poly1305test.lst  \
+		 poly1305speed.bin poly1305speed.lst
 
 
 poly1305test.elf: poly1305.o poly1305.h test.o $(OBJS) $(LDSCRIPT)
