@@ -7,7 +7,7 @@ crypto_stream_chacha20_asm:
 	@ r0     output stream pointer
 	@ r1     unused
 	@ r2     output stream length in bytes, lower half
-	@ r3     output stream length in bytes, upper half
+	@ r3     output stream length in bytes, upper half, assumed zero
 	@ [sp+0] nonce pointer, 8 bytes
 	@ [sp+4] key pointer, 32 bytes
 
@@ -32,20 +32,33 @@ crypto_stream_chacha20_asm:
 	@ r0      output stream pointer
 	@ [r1+ 0] nonce, 8 bytes
 	@ [r1+ 8] not yet initialized
-	@ [r1+12] counter, upper half
-	@ r2	key pointer
-	@ r3	constant pointer
-	@ r4	counter, lower half
+	@ [r1+12] zero
+	@ r2      key pointer
+	@ r3      constant pointer
+	@ r4      counter
 
 block_loop:
 	str r4, [r1, #8]
 	bl chacha20_core_asm
 	subs r4, #1
 	sub r0, #64
-	bne block_loop
+	bpl block_loop
 
 partial_block:
-	@ TODO
+	ldr r4, [sp, #80] @ output size
+	ands r5, r4, #63
+	beq return
+	mov r4, r4, lsr #6
+	str r4, [r1, #8]
+	add r5, r0, r4, lsl #6
+	add r0, sp, #16
+	bl chacha20_core_asm
+
+	add r0, r5, #64
+	add r1, sp, #16
+	ldr r2, [sp, #80]
+	and r2, #63
+	bl memcpy
 
 return:
 	add sp, #80
