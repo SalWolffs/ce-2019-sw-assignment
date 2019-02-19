@@ -7,23 +7,31 @@ Public domain.
 #include "poly1305.h"
 
 static void add(unsigned int h[17],const unsigned int c[17])
-{
-  unsigned int j;
-  unsigned int u;
+{   // little-endian bytewise addition on 136 bits
+  unsigned int j; // loop counter
+  unsigned int u; // buffer for local result (8 bits) and carry (1 bit). 32 bits.
   u = 0;
   for (j = 0;j < 17;++j) { u += h[j] + c[j]; h[j] = u & 255; u >>= 8; }
 }
 
 static void squeeze(unsigned int h[17])
 {
-  unsigned int j;
-  unsigned int u;
+  unsigned int j; // loop counter
+  unsigned int u; // result buffer
   u = 0;
   for (j = 0;j < 16;++j) { u += h[j]; h[j] = u & 255; u >>= 8; }
+    // Carry loop on first 128 bits.
   u += h[16]; h[16] = u & 3;
-  u = 5 * (u >> 2);
+    // Add with carry on last 2 bits. Keep overflow in u.
+  u = 5 * (u >> 2); 
+    // For every 2**130 we cut off, add 5 back to stay equal mod 2**130-5 .
   for (j = 0;j < 16;++j) { u += h[j]; h[j] = u & 255; u >>= 8; }
+    // Carry on first 128 bits.
   u += h[16]; h[16] = u;
+    // leave final carry in top byte. Note: this is reduced, but not uniquely
+    // so in mod 2**130-5: 2**130-1 written as 
+    // 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0x3
+    // would remain that way, while in mod 2**130-5 it equals 4
 }
 
 static const unsigned int minusp[17] = {
