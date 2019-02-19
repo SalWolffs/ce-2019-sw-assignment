@@ -4,7 +4,7 @@
 .global chacha20_core_asm
 .type chacha20_core_asm, %function
 chacha20_core_asm:
-    push {r0-r12,lr} 
+    push {r0-r5,lr}
     # store args as well as everything we need to restore
     # Note: lr==r14. We'll be using it as a general-purpose register
     # minor gripe: this'd be a bit neater if sp were r14
@@ -38,6 +38,7 @@ chacha20_core_asm:
     # load constant. It'll also stay. Note: Overwriting r3 like this is legal.
     # r12 and r14 still contain *in+8 and *in+12. What luck: that's x12 and x13
 
+    .align 2
 quadround:
 # Note: quadround, as in two full vertical and two full diagonal rounds
 # This'll be a slog, so it's mostly script-generated
@@ -268,6 +269,6 @@ quadround:
     
     # We're done, 20 rounds executed, added to original, and written to output.
     # restore registers and return 0:
-    pop {r0-r12,lr}
+    pop {r0-r5,lr}
     bx lr
 
