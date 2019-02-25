@@ -5,6 +5,11 @@ Public domain.
 */
 
 #include "poly1305.h"
+#include <stdint.h>
+
+typedef uint32_t uint32;
+typedef uint64_t uint64;
+typedef uint_fast8_t ctr;
 
 static void add(unsigned int h[17],const unsigned int c[17])
 {   // little-endian bytewise addition on 136 bits
@@ -13,6 +18,29 @@ static void add(unsigned int h[17],const unsigned int c[17])
   u = 0;
   for (j = 0;j < 17;++j) { u += h[j] + c[j]; h[j] = u & 255; u >>= 8; }
 }
+
+static void add32(uint32 h[5], const uint32 c[5]){
+    ctr    j = 5;
+    uint64 u = 0;
+    while (j > 0) {
+        u += h[j] + c[j];
+        h[j] = ((uint32) u) & 0xffffffff;
+        u >>= 32;
+        --j;
+    }
+}
+    
+static void add26(uint32 h[5], const uint32 c[5]) {
+    ctr j = 5;
+    uint32 u = 0;
+    while (j > 0) {
+        u += h[j] + c[j];
+        h[j] = u & 0x03ffffff;
+        u >>= 26;
+        --j;
+    }
+}
+
 
 static void squeeze(unsigned int h[17])
 {
