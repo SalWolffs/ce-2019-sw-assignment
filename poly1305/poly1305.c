@@ -34,7 +34,8 @@ static void squeeze(unsigned int h[17])
     // would remain that way, while in mod 2**130-5 it equals 4
 }
 
-static const unsigned int minusp[17] = {
+static const unsigned int minusp[17] = { 
+    // that is, -p, little-endian, 2's complement in 136 bits
   5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 252
 } ;
 
@@ -59,7 +60,9 @@ static void mulmod(unsigned int h[17],const unsigned int r[17])
   for (i = 0;i < 17;++i) {
     u = 0;
     for (j = 0;j <= i;++j) u += h[j] * r[i - j];
-    for (j = i + 1;j < 17;++j) u += 320 * h[j] * r[i + 17 - j];
+    for (j = i + 1;j < 17;++j) u += 320 * h[j] * r[i + 17 - j]; 
+        // modular wraparound. 320 = 5 * 64 . 5 is for 2**130-5, but what is 64?
+        // Answer: 2**(8-(130-128)). This is the "gap" Bernstein talks about. 
     hr[i] = u;
   }
   for (i = 0;i < 17;++i) h[i] = hr[i];
