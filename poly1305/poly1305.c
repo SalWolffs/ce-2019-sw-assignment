@@ -10,6 +10,10 @@ Public domain.
 typedef uint32_t uint32;
 typedef uint64_t uint64;
 typedef uint_fast8_t ctr;
+typedef const uint32 rad32[5];
+typedef const uint32 rad26[5];
+typedef uint32 mut32[5];
+typedef uint32 mut26[5];
 
 static void add(unsigned int h[17],const unsigned int c[17])
 {   // little-endian bytewise addition on 136 bits
@@ -20,24 +24,24 @@ static void add(unsigned int h[17],const unsigned int c[17])
 }
 
 static void add32(uint32 h[5], const uint32 c[5]){
-    ctr    j = 5;
+    ctr    j = 0;
     uint64 u = 0;
-    while (j > 0) {
+    while (j < 5) {
         u += h[j] + c[j];
-        h[j] = ((uint32) u) & 0xffffffff;
+        h[j] = (uint32) u;
         u >>= 32;
-        --j;
+        ++j;
     }
 }
     
 static void add26(uint32 h[5], const uint32 c[5]) {
-    ctr j = 5;
+    ctr j = 0;
     uint32 u = 0;
-    while (j > 0) {
+    while (j < 5) {
         u += h[j] + c[j];
         h[j] = u & 0x03ffffff;
         u >>= 26;
-        --j;
+        ++j;
     }
 }
 
@@ -60,6 +64,33 @@ static void squeeze(unsigned int h[17])
     // so in mod 2**130-5: 2**130-1 written as 
     // 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0x3
     // would remain that way, while in mod 2**130-5 it equals 4
+}
+
+static void squeeze32(mut32 h){
+    ctr j = 0;
+    uint64 u = 0;
+    // Skip carry loop: there is no slack
+    /*
+    for (j = 0; j < 4; ++j){
+        u += h[j];
+        h[j] = (uint32) u;
+        u >>= 32;
+    }
+    */
+    u += h[4];
+    h[4] = ((uint32) u) & 0x3;
+    u = 5 * (u >> 2);
+    for (j = 0; j < 4; ++j){
+        u += h[j];
+        h[j] = (uint32) u;
+        u >>= 32;
+    }
+    u += h[4]; h[4] = (uint32) u;
+
+
+}
+
+static void squeeze26(mut26 h){
 }
 
 static const unsigned int minusp[17] = { 
