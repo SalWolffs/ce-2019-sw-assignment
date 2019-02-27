@@ -86,11 +86,25 @@ static void squeeze32(mut32 h){
         u >>= 32;
     }
     u += h[4]; h[4] = (uint32) u;
-
-
 }
 
 static void squeeze26(mut26 h){
+    ctr j = 0;
+    uint32 u = 0;
+    for (j = 0; j < 4; ++j){
+        u += h[j];
+        h[j] = u & 0x03ffffff;
+        u >>= 26;
+    }
+    u += h[4];
+    h[4] = u & 0x03ffffff;
+    u = 5 * (u >> 26);
+    for (j = 0; j < 4; ++j){
+        u += h[j];
+        h[j] = u & 0x03ffffff;
+        u >>= 32;
+    }
+    u += h[4]; h[4] = u;
 }
 
 static const unsigned int minusp[17] = { 
