@@ -108,8 +108,15 @@ static void squeeze26(mut26 h){
 }
 
 static const unsigned int minusp[17] = { 
-    // that is, -p, little-endian, 2's complement in 136 bits
+    // that is, -p, little-endian, 2's complement in 136 bits, 8-bit radix
   5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 252
+} ;
+
+static rad32 minp32 = { // 2's complement in 160 bits, 32-bit radix
+  5,0,0,0,0xfffffffc
+} ;
+static rad26 minp26 = { // 2's complement in 130 bits, 26-bit radix
+  5,0,0,0,0
 } ;
 
 static void freeze(unsigned int h[17])
@@ -121,6 +128,32 @@ static void freeze(unsigned int h[17])
   add(h,minusp);
   negative = -(h[16] >> 7);
   for (j = 0;j < 17;++j) h[j] ^= negative & (horig[j] ^ h[j]);
+}
+
+static void freeze32(mut32 h) {
+    mut32 horig;
+    ctr j = 0;
+    for (j = 0; j < 5; ++j) {
+        horig[j] = h[j];
+    }
+    add32(h,minp32);
+    const uint32 neg = -(h[5] >> 31);
+    for (j = 0; j < 5; ++j) {
+        h[j] ^= neg & (horig[j] ^ h[j])
+    }
+}
+
+static void freeze26(mut26 h) {
+    mut26 horig;
+    ctr j = 0;
+    for (j = 0; j < 5; ++j) {
+        horig[j] = h[j];
+    }
+    add26(h,minp26);
+    const uint32 neg = -(h[5] >> 25);
+    for (j = 0; j < 5; ++j) {
+        h[j] ^= neg & (horig[j] ^ h[j])
+    }
 }
 
 static void mulmod(unsigned int h[17],const unsigned int r[17])
