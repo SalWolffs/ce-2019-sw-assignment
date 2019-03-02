@@ -175,6 +175,26 @@ static void mulmod(unsigned int h[17],const unsigned int r[17])
   squeeze(h);
 }
 
+static void mulmod32(mut32 h, rad32 r)
+{
+  rad32 hr;
+  ctr i = 0;
+  ctr j = 0;
+  uint64 u; // FIXME: doesn't fit. Needs uint96. Easy in assembly, hard in C.
+
+  for (i = 0;i < 5;++i) {
+    u = 0;
+    for (j = 0;j <= i;++j) u += h[j] * r[i - j];
+    for (j = i + 1;j < 5;++j) u += 320 * h[j] * r[i + 5 - j];
+        // modular wraparound. 320 = 5 * 64 . 5 is for 2**130-5, but what is 64?
+        // Answer: 2**(8-(130-128)). This is the "gap" Bernstein talks about. 
+        // TODO: check whether this needs adjusting for different radix (probably not)
+    hr[i] = u;
+  }
+  for (i = 0;i < 5;++i) h[i] = hr[i];
+  squeeze(h);
+}
+
 int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsigned long long inlen,const unsigned char *k)
 {
   unsigned int j;
