@@ -102,7 +102,7 @@ static void squeeze26(mut26 h){
     for (j = 0; j < 4; ++j){
         u += h[j];
         h[j] = u & 0x03ffffff;
-        u >>= 32;
+        u >>= 26;
     }
     u += h[4]; h[4] = u;
 }
@@ -139,7 +139,7 @@ static void freeze32(mut32 h) {
     add32(h,minp32);
     const uint32 neg = -(h[5] >> 31);
     for (j = 0; j < 5; ++j) {
-        h[j] ^= neg & (horig[j] ^ h[j])
+        h[j] ^= neg & (horig[j] ^ h[j]);
     }
 }
 
@@ -152,7 +152,7 @@ static void freeze26(mut26 h) {
     add26(h,minp26);
     const uint32 neg = -(h[5] >> 25);
     for (j = 0; j < 5; ++j) {
-        h[j] ^= neg & (horig[j] ^ h[j])
+        h[j] ^= neg & (horig[j] ^ h[j]);
     }
 }
 
@@ -177,7 +177,7 @@ static void mulmod(unsigned int h[17],const unsigned int r[17])
 
 static void mulmod32(mut32 h, rad32 r)
 {
-  rad32 hr;
+  mut32 hr;
   ctr i = 0;
   ctr j = 0;
   uint64 u; // FIXME: doesn't fit. Needs uint96. Easy in assembly, hard in C.
@@ -192,7 +192,7 @@ static void mulmod32(mut32 h, rad32 r)
     hr[i] = u;
   }
   for (i = 0;i < 5;++i) h[i] = hr[i];
-  squeeze(h);
+  squeeze32(h);
 }
 
 int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsigned long long inlen,const unsigned char *k)
