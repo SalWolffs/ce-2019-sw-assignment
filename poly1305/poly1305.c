@@ -15,6 +15,10 @@ typedef const uint32 rad26[5];
 typedef uint32 mut32[5];
 typedef uint32 mut26[5];
 
+extern void mulmod26(uint32 h[5], const uint32 r[5]);
+extern void reduce26(uint32 h[5]);
+extern void add26(uint32 h[5], uint32 c[5]);
+
 // little-endian bytewise addition on 136 bits
 static void add(unsigned int h[17], const unsigned int c[17]) {
     // loop counter
@@ -27,12 +31,6 @@ static void add(unsigned int h[17], const unsigned int c[17]) {
         u += h[j] + c[j];
         h[j] = u & 255;
         u >>= 8;
-    }
-}
-
-static void add26(uint32 h[5], const uint32 c[5]) {
-    for (ctr j = 0; j < 5; ++j) {
-        h[j] += c[j];
     }
 }
 
@@ -74,36 +72,9 @@ static void squeeze(unsigned int h[17]) {
     h[16] = u;
 }
 
-static void squeeze26(mut26 h) {
-    ctr j = 0;
-    uint32 u = 0;
-
-    for (j = 0; j < 4; ++j) {
-        u += h[j];
-        h[j] = u & 0x03ffffff;
-        u >>= 26;
-    }
-
-    u += h[4];
-    h[4] = u & 0x03ffffff;
-    u = 5 * (u >> 26);
-
-    for (j = 0; j < 4; ++j) {
-        u += h[j];
-        h[j] = u & 0x03ffffff;
-        u >>= 26;
-    }
-
-    u += h[4];
-    h[4] = u;
-}
-
 // that is, -p, little-endian, 2's complement in 136 bits, 8-bit radix
 static const unsigned int minusp[17] = {5, 0, 0, 0, 0, 0, 0, 0,  0,
                                         0, 0, 0, 0, 0, 0, 0, 252};
-
-// 2's complement in 130 bits, 26-bit radix
-static rad26 minp26 = {5, 0, 0, 0, 0};
 
 // Reduce modulo p a number 0 <= h < 2p, that is:
 // if (h >= p) { h -= p; }
@@ -121,22 +92,6 @@ static void freeze(unsigned int h[17]) {
 
     for (j = 0; j < 17; ++j) {
         h[j] ^= negative & (horig[j] ^ h[j]);
-    }
-}
-
-static void freeze26(mut26 h) {
-    mut26 horig;
-    ctr j = 0;
-
-    for (j = 0; j < 5; ++j) {
-        horig[j] = h[j];
-    }
-
-    add26(h, minp26);
-    const uint32 neg = -(h[5] >> 25);
-
-    for (j = 0; j < 5; ++j) {
-        h[j] ^= neg & (horig[j] ^ h[j]);
     }
 }
 
@@ -168,8 +123,6 @@ static void mulmod(unsigned int h[17], const unsigned int r[17]) {
     squeeze(h);
 }
 
-extern void mulmod26(uint32 h[5], const uint32 r[5]);
-
 // This function assumes little endian memory layout.
 int poly1305_26(unsigned char *out, const unsigned char *in,
                 unsigned long long inlen, const unsigned char *k) {
@@ -198,8 +151,7 @@ int poly1305_26(unsigned char *out, const unsigned char *in,
     // TODO: Set c to upper half of k
 
     add26(h, c);
-
-    // TODO: Fully reduce h modulo p
+    reduce26(h);
 
     out_words[0] = h[0] | h[1] << 26;
     out_words[1] = h[1] >> 6 | h[2] << 20;

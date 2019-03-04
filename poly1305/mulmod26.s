@@ -90,12 +90,11 @@ mulmod26:
 	lsr r10, #26
 	orr r10, r10, r11, lsl #6       @ r10    < 12L
 
-	ldmia r14, {r0,r1}
+	ldmia r14, {r0,r1}              @ r{0,1} <   L
 	add r10, r10, r10, lsl #2       @ r10    < 60L
 	add r10, r0                     @ r10    < 61L
 	and r0, r10, #0x03ffffff        @ r0     <   L
 	add r1, r1, r10, lsr #26        @ r1     <  2L
 	stmia r14, {r0,r1}
 
-	pop {r4-r11,lr}
-	bx lr
+	pop {r4-r11,pc}
