@@ -206,7 +206,8 @@ static void mulmod26(uint32 h[5], const uint32 r[5]) {
 // This function assumes little endian memory layout.
 int poly1305_26(unsigned char *out, const unsigned char *in,
                 unsigned long long inlen, const unsigned char *k) {
-    uint32 j, r[5], h[5], c[5];
+    uint32 r[5], h[5], c[5];
+    uint32 *out_words = (uint32 *)out;
 
     r[0] = (*(uint32 *)(k + 0) & 0x03ffffff) >> 0;
     r[1] = (*(uint32 *)(k + 3) & 0x0ffffc0c) >> 2;
@@ -229,9 +230,14 @@ int poly1305_26(unsigned char *out, const unsigned char *in,
 
     // TODO: Set c to upper half of k
 
-    add(h, c);
+    add26(h, c);
 
-    // TODO: Fully reduce h modulo p and write to out
+    // TODO: Fully reduce h modulo p
+
+    out_words[0] = h[0] | h[1] << 26;
+    out_words[1] = h[1] >> 6 | h[2] << 20;
+    out_words[2] = h[2] >> 12 | h[3] << 14;
+    out_words[3] = h[3] >> 18 | h[4] << 8;
 
     return 0;
 }
