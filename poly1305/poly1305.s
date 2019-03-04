@@ -1,9 +1,9 @@
 .syntax unified
 .cpu cortex-m4
 
-.global crypto_onetimeauth_poly1305_asm
-.type crypto_onetimeauth_poly1305_asm, %function
-crypto_onetimeauth_poly1305_asm:
+.global crypto_onetimeauth_poly1305
+.type crypto_onetimeauth_poly1305, %function
+crypto_onetimeauth_poly1305:
 	@ r0     output pointer, 16 bytes
 	@ r1     input stream pointer
 	@ r2     input stream length, lower half
@@ -56,22 +56,20 @@ loop:
 	ldr r1, [sp, #40]               @ input stream pointer
 	add r3, r1, #16
 	subs r14, #16
-	ittt cc
-	strcc r3, [sp, #40]
-	movcc r4, #0x01000000
-	bcc fast_load
+	ittt cs
+	strcs r3, [sp, #40]
+	movcs r4, #0x01000000
+	bcs fast_load
 
 	add r0, sp, #20
 	add r2, r14, #16
-	str r4, [r0]
-	str r4, [r0, #4]
-	str r4, [r0, #8]
-	str r4, [r0, #12]
+	add r10, r2, r0
+	strd r4, r4, [r0]
+	strd r4, r4, [r0, #8]
 	bl memcpy
 	mov r1, r0
 	mov r0, #1
-	add r2, r1, r14
-	strb r0, [r2, #16]
+	strb r0, [r10]
 
 fast_load:
 	@ Load 16 bytes of input from memory at r1.
@@ -175,7 +173,7 @@ fast_load:
 	and r5, r10, #0x03ffffff        @ r5     <   L
 	add r6, r6, r10, lsr #26        @ r6     <  2L
 
-	bcc loop
+	bcs loop
 
 	@ Load upper half of key into 26-bit limbs.
 	ldr r10, [sp, #80]              @ Pointer to key, 32 bytes
