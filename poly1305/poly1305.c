@@ -30,26 +30,14 @@ static void add(unsigned int h[17], const unsigned int c[17]) {
     }
 }
 
-static void add32(uint32 h[5], const uint32 c[5]) {
-    uint64 u = 0;
-
-    for (ctr j = 0; j < 5; ++j) {
-        u += h[j] + c[j];
-        h[j] = (uint32)u;
-        u >>= 32;
-    }
-}
-
 static void add26(uint32 h[5], const uint32 c[5]) {
-    uint32 u = 0;
-
     for (ctr j = 0; j < 5; ++j) {
-        u += h[j] + c[j];
-        h[j] = u & 0x03ffffff;
-        u >>= 26;
+        h[j] += c[j];
     }
 }
 
+// Resolve carries until every array element except the most significant one
+// fits in a single byte.
 static void squeeze(unsigned int h[17]) {
     // loop counter
     unsigned int j;
@@ -86,26 +74,6 @@ static void squeeze(unsigned int h[17]) {
     h[16] = u;
 }
 
-static void squeeze32(mut32 h) {
-    ctr j = 0;
-    uint64 u = 0;
-
-    // Skip carry loop: there is no slack
-
-    u += h[4];
-    h[4] = ((uint32)u) & 0x3;
-    u = 5 * (u >> 2);
-
-    for (j = 0; j < 4; ++j) {
-        u += h[j];
-        h[j] = (uint32)u;
-        u >>= 32;
-    }
-
-    u += h[4];
-    h[4] = (uint32)u;
-}
-
 static void squeeze26(mut26 h) {
     ctr j = 0;
     uint32 u = 0;
@@ -134,12 +102,11 @@ static void squeeze26(mut26 h) {
 static const unsigned int minusp[17] = {5, 0, 0, 0, 0, 0, 0, 0,  0,
                                         0, 0, 0, 0, 0, 0, 0, 252};
 
-// 2's complement in 160 bits, 32-bit radix
-static rad32 minp32 = {5, 0, 0, 0, 0xfffffffc};
-
 // 2's complement in 130 bits, 26-bit radix
 static rad26 minp26 = {5, 0, 0, 0, 0};
 
+// Reduce modulo p a number 0 <= h < 2p, that is:
+// if (h >= p) { h -= p; }
 static void freeze(unsigned int h[17]) {
     unsigned int horig[17];
     unsigned int j;
@@ -154,22 +121,6 @@ static void freeze(unsigned int h[17]) {
 
     for (j = 0; j < 17; ++j) {
         h[j] ^= negative & (horig[j] ^ h[j]);
-    }
-}
-
-static void freeze32(mut32 h) {
-    mut32 horig;
-    ctr j = 0;
-
-    for (j = 0; j < 5; ++j) {
-        horig[j] = h[j];
-    }
-
-    add32(h, minp32);
-    const uint32 neg = -(h[5] >> 31);
-
-    for (j = 0; j < 5; ++j) {
-        h[j] ^= neg & (horig[j] ^ h[j]);
     }
 }
 
@@ -217,36 +168,72 @@ static void mulmod(unsigned int h[17], const unsigned int r[17]) {
     squeeze(h);
 }
 
-static void mulmod32(mut32 h, rad32 r) {
-    mut32 hr;
-    ctr i = 0;
-    ctr j = 0;
+// Let L be 0x03ffffff, the maximum value of a 26-bit limb.
+static void mulmod26(uint32 h[5], const uint32 r[5]) {
+    // Assertion: h[1] < 3L, h[0,2,3,4] < 2L
+    // Assertion: r[0,1,2,3,4] < L
+    uint32 hr[5];
+    uint64 u = 0;
 
-    // FIXME: doesn't fit. Needs uint96. Easy in assembly, hard in C.
-    uint64 u;
-
-    for (i = 0; i < 5; ++i) {
-        u = 0;
-        for (j = 0; j <= i; ++j) {
+    for (ctr i = 0; i < 5; ++i) {
+        // Assertion: u < 1LL
+        for (ctr j = 0; j <= i; ++j) {
             u += h[j] * r[i - j];
         }
 
-        // modular wraparound. 320 = 5 * 64 . 5 is for 2**130-5, but what is 64?
-        // Answer: 2**(8-(130-128)). This is the "gap" Bernstein talks about.
-        // TODO: check whether this needs adjusting for different radix
-        // (probably not)
-        for (j = i + 1; j < 5; ++j) {
-            u += 320 * h[j] * r[i + 5 - j];
+        for (ctr j = i + 1; j < 5; ++j) {
+            u += 5 * h[j] * r[i + 5 - j];
         }
 
-        hr[i] = u;
+        hr[i] = u & 0x03ffffff;
+        u >>= 26;
+        // Assertion: u < 47L < UINT32_MAX
     }
 
-    for (i = 0; i < 5; ++i) {
+    // Assertion: hr[0,1,2,3,4] < L
+    // Assertion: u < 12L
+    u = 5 * u + hr[0];
+    // Assertion: u < 61L
+    hr[0] = u & 0x03ffffff;
+    hr[1] += u >> 26;
+    // Assertion: hr[1] < 2L, hr[0,2,3,4] < L
+
+    for (ctr i = 0; i < 5; ++i) {
         h[i] = hr[i];
     }
+}
 
-    squeeze32(h);
+// This function assumes little endian memory layout.
+int poly1305_26(unsigned char *out, const unsigned char *in,
+                unsigned long long inlen, const unsigned char *k) {
+    uint32 j, r[5], h[5], c[5];
+
+    r[0] = (*(uint32 *)(k + 0) & 0x03ffffff) >> 0;
+    r[1] = (*(uint32 *)(k + 3) & 0x0ffffc0c) >> 2;
+    r[2] = (*(uint32 *)(k + 6) & 0x3ffc0ff0) >> 4;
+    r[3] = (*(uint32 *)(k + 9) & 0xfc0fffc0) >> 6;
+    r[4] = (*(uint32 *)(k + 12) & 0x0fffff00) >> 8;
+
+    h[0] = h[1] = h[2] = h[3] = h[4] = 0;
+
+    while (inlen > 0) {
+        c[0] = c[1] = c[2] = c[3] = c[4] = 0;
+        // TODO: Load c from in and update in and inlen
+
+        // Assertion: h[1] < 2L, h[0,2,3,4] < L
+        add26(h, c);
+        // Assertion: h[1] < 3L, h[0,2,3,4] < 2L
+        mulmod26(h, r);
+        // Assertion: h[1] < 2L, h[0,2,3,4] < L
+    }
+
+    // TODO: Set c to upper half of k
+
+    add(h, c);
+
+    // TODO: Fully reduce h modulo p and write to out
+
+    return 0;
 }
 
 int crypto_onetimeauth_poly1305(unsigned char *out, const unsigned char *in,
@@ -275,11 +262,13 @@ int crypto_onetimeauth_poly1305(unsigned char *out, const unsigned char *in,
     r[15] = k[15] & 15;
     r[16] = 0;
 
+    // h = 0
     for (j = 0; j < 17; ++j) {
         h[j] = 0;
     }
 
     while (inlen > 0) {
+        // c = 0
         for (j = 0; j < 17; ++j) {
             c[j] = 0;
         }
