@@ -168,40 +168,7 @@ static void mulmod(unsigned int h[17], const unsigned int r[17]) {
     squeeze(h);
 }
 
-// Let L be 0x03ffffff, the maximum value of a 26-bit limb.
-static void mulmod26(uint32 h[5], const uint32 r[5]) {
-    // Assertion: h[1] < 3L, h[0,2,3,4] < 2L
-    // Assertion: r[0,1,2,3,4] < L
-    uint32 hr[5];
-    uint64 u = 0;
-
-    for (ctr i = 0; i < 5; ++i) {
-        // Assertion: u < 1LL
-        for (ctr j = 0; j <= i; ++j) {
-            u += h[j] * r[i - j];
-        }
-
-        for (ctr j = i + 1; j < 5; ++j) {
-            u += 5 * h[j] * r[i + 5 - j];
-        }
-
-        hr[i] = u & 0x03ffffff;
-        u >>= 26;
-        // Assertion: u < 47L < UINT32_MAX
-    }
-
-    // Assertion: hr[0,1,2,3,4] < L
-    // Assertion: u < 12L
-    u = 5 * u + hr[0];
-    // Assertion: u < 61L
-    hr[0] = u & 0x03ffffff;
-    hr[1] += u >> 26;
-    // Assertion: hr[1] < 2L, hr[0,2,3,4] < L
-
-    for (ctr i = 0; i < 5; ++i) {
-        h[i] = hr[i];
-    }
-}
+extern void mulmod26(uint32 h[5], const uint32 r[5]);
 
 // This function assumes little endian memory layout.
 int poly1305_26(unsigned char *out, const unsigned char *in,
