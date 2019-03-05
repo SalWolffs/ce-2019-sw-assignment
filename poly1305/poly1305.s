@@ -94,7 +94,7 @@ fast_load:
 	add r9, r4
 
 	@ mulmod26(h, r);
-	ldmdb sp, {r5-r9}
+	ldmdb sp, {r0-r4}
 	mov r10, 0
 	mov r11, 0
 
