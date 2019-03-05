@@ -73,7 +73,7 @@ loop:
 
 fast_load:
 	@ Load 16 bytes of input from memory at r1.
-	@ r4 may already contains the upper two bits, so don't clear it.
+	@ r4 already contains the upper two bits, so don't clear it.
 	ldmia r1, {r0-r3}
 	mov r10, #0x03ffffff
 
@@ -173,7 +173,7 @@ fast_load:
 	and r5, r10, #0x03ffffff        @ r5     <   L
 	add r6, r6, r10, lsr #26        @ r6     <  2L
 
-	bcs loop
+	bhi loop
 
 	@ Load upper half of key into 26-bit limbs.
 	ldr r10, [sp, #80]              @ Pointer to key, 32 bytes
