@@ -79,7 +79,7 @@ fast_load:
 
 	orr r4, r4, r3, lsr #8
 	and r3, r10, r3, lsl #18
-	orr r3, r8, r2, lsr #14
+	orr r3, r3, r2, lsr #14
 	and r2, r10, r2, lsl #12
 	orr r2, r2, r1, lsr #20
 	and r1, r10, r1, lsl #6
@@ -183,7 +183,7 @@ fast_load:
 
 	lsr r4, r3, #8
 	and r3, r10, r3, lsl #18
-	orr r3, r8, r2, lsr #14
+	orr r3, r3, r2, lsr #14
 	and r2, r10, r2, lsl #12
 	orr r2, r2, r1, lsr #20
 	and r1, r10, r1, lsl #6
