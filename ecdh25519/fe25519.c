@@ -192,7 +192,25 @@ void fe25519_mul(fe25519 *r, const fe25519 *x, const fe25519 *y) {
     reduce_mul(r);
 }
 
-void fe25519_square(fe25519 *r, const fe25519 *x) { fe25519_mul(r, x, x); }
+void fe25519_square(fe25519 *r, const fe25519 *x) {
+    int i, j;
+    uint32_t t[63];
+    for (i = 0; i < 63; i++)
+        t[i] = 0;
+
+    for (i = 0; i < 32; i++)
+        t[i + i] += x->v[i] * x->v[i];
+
+    for (i = 0; i < 32; i++)
+        for (j = 0; j < i; j++)
+            t[i + j] += 2 * x->v[i] * x->v[j];
+
+    for (i = 32; i < 63; i++)
+        r->v[i - 32] = t[i - 32] + times38(t[i]);
+    r->v[31] = t[31]; /* result now in r[0]...r[31] */
+
+    reduce_mul(r);
+}
 
 #if 0
 void fe25519_invert(fe25519 *r, const fe25519 *x)
