@@ -3,11 +3,9 @@
 
 #include <stdint.h>
 
-typedef struct 
-{
-  uint32_t v[32]; 
-}
-fe25519;
+typedef struct {
+    uint32_t v[32];
+} fe25519;
 
 extern const fe25519 fe25519_zero;
 extern const fe25519 fe25519_one;
