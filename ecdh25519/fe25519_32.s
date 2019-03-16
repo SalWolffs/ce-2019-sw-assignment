@@ -19,7 +19,8 @@ ge:
 fe25519_freeze:
     push {r4-r9,lr}
     ldmia r0, {r1-r8}
-    eor r9, r1, #0x7fffffff
+    mov r9, #0x7fffffff
+    eor r9, r1
     orn r9, r2
     orn r9, r3
     orn r9, r4
@@ -27,10 +28,12 @@ fe25519_freeze:
     orn r9, r6
     orn r9, r7
     sub r14, r8, #0xffffffed @ 2^32 - 19
-    orrs r9 , r14, lsr #31
+    orrs r9, r9, r14, lsr #31
     @ now r9 = 0 <=> *r0 >= 2^255 - 19
+    ite ne
     movne r9, #0xffffffff
     @ if r9 = 0, clear r0[0:7] and subtract 2^32-19 from r0[7] :
+    subeq r8, #0xffffffed
     and r1, r9 
     and r2, r9 
     and r3, r9 
@@ -38,7 +41,6 @@ fe25519_freeze:
     and r5, r9 
     and r6, r9 
     and r7, r9 
-    subeq r8, #0xffffffed
     stmia r0, {r1-r8}
     pop {r4-r9,lr}
 
@@ -47,9 +49,11 @@ fe25519_freeze:
 
 .global fe25519_iseq
 .type fe25519_iseq, %function
-fe25519_iszero:
-    sub r0, #1
-    lsr r0, #31
-    bx lr
+fe25519_iseq:
+    push {r4-r12,lr}
+    mov r14, r1
+    bl fe25519_freeze
+    
 
 
+@ vim: ft=arm
