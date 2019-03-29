@@ -43,9 +43,9 @@ static uint32_t ge(uint32_t a, uint32_t b) { /* 16-bit inputs */
     return x;
 }
 
-static uint32_t times19(uint32_t a) { return (a << 4) + (a << 1) + a; }
+static uint32_t times19(uint32_t a) { return 19 * a; }
 
-static uint32_t times38(uint32_t a) { return (a << 5) + (a << 2) + (a << 1); }
+static uint32_t times38(uint32_t a) { return 38 * a; }
 
 static void reduce_add_sub(fe25519 *r) {
     uint32_t t;
@@ -343,14 +343,13 @@ void fe25519_pow2523(fe25519 *r, const fe25519 *x) {
 }
 
 void fe25519_invsqrt(fe25519 *r, const fe25519 *x) {
-    fe25519 den2, den3, den4, den6, chk, t, t2;
+    fe25519 den2, den3, den6, chk, t, t2;
     int b;
 
     fe25519_square(&den2, x);
     fe25519_mul(&den3, &den2, x);
 
-    fe25519_square(&den4, &den2);
-    fe25519_mul(&den6, &den2, &den4);
+    fe25519_square(&den6, &den3);
     fe25519_mul(&t, &den6, x); // r is now x^7
 
     fe25519_pow2523(&t, &t);
