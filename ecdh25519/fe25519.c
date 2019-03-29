@@ -140,8 +140,16 @@ int fe25519_iseq(const fe25519 *x, const fe25519 *y) {
 }
 
 void fe25519_cmov(fe25519 *r, const fe25519 *x, unsigned char b) {
-    if (b)
-        *r = *x;
+    fe25519 diff;
+    int i;
+
+    for (i = 0; i < 32; i++)
+        diff.v[i] = r->v[i] ^ x->v[i];
+
+    uint32_t mask = -b;
+
+    for (i = 0; i < 32; i++)
+        r->v[i] ^= diff.v[i] & mask;
 }
 
 void fe25519_neg(fe25519 *r, const fe25519 *x) {
