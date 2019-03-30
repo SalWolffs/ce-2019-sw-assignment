@@ -3,6 +3,17 @@
 
 #include <stdint.h>
 
+// NOTE: pack and unpack are NOT generalized over the following parameters.
+#define LIMB_COUNT 11
+#define USED_BITS 24
+#define USED_BITS_FINAL 15
+#define LIMB_COUNT_MUL (2 * LIMB_COUNT - 1)
+#define FINAL_LIMB (LIMB_COUNT - 1)
+#define USED_BITS_DIFF (USED_BITS - USED_BITS_FINAL)
+#define USED_MASK ((1 << USED_BITS) - 1)
+#define USED_MASK_FINAL ((1 << USED_BITS_FINAL) - 1)
+#define FIRST_LIMB_MAX (USED_MASK - 18)
+
 typedef struct {
     uint32_t v[11];
 } fe25519;
