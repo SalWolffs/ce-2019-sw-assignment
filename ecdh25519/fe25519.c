@@ -190,7 +190,7 @@ void fe25519_mul(fe25519 *o, const fe25519 *x, const fe25519 *y) {
 
     for (i = 0; i < LIMB_COUNT; i++)
         for (j = 0; j < LIMB_COUNT; j++)
-            t[i + j] += x->v[i] * y->v[j];
+            t[i + j] += ((uint64_t)x->v[i]) * y->v[j];
 
     for (i = 0; i < LIMB_COUNT; i++) {
         r[i] += t[i] & USED_MASK;
@@ -226,11 +226,11 @@ void fe25519_square(fe25519 *o, const fe25519 *x) {
     uint64_t limb;
 
     for (i = 0; i < LIMB_COUNT; i++)
-        t[i + i] += x->v[i] * x->v[i];
+        t[i + i] += ((uint64_t)x->v[i]) * x->v[i];
 
     for (i = 0; i < LIMB_COUNT; i++)
         for (j = 0; j < i; j++)
-            t[i + j] += 2 * x->v[i] * x->v[j];
+            t[i + j] += ((uint64_t)(x->v[i] << 1)) * x->v[j];
 
     for (i = 0; i < LIMB_COUNT; i++) {
         r[i] += t[i] & USED_MASK;
