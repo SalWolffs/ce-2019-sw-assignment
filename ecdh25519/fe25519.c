@@ -182,15 +182,11 @@ void fe25519_sub(fe25519 *r, const fe25519 *x, const fe25519 *y) {
     reduce(r);
 }
 
-void fe25519_mul(fe25519 *o, const fe25519 *x, const fe25519 *y) {
-    int i, j;
-    uint64_t t[LIMB_COUNT_MUL] = {0};
+void fe25519_mul_reduce(fe25519 *o, const uint64_t t[]) {
+    int i;
     uint32_t r[LIMB_COUNT + 2] = {0};
-    uint64_t limb;
-
-    for (i = 0; i < LIMB_COUNT; i++)
-        for (j = 0; j < LIMB_COUNT; j++)
-            t[i + j] += ((uint64_t)x->v[i]) * y->v[j];
+    uint64_t limb64;
+    uint32_t limb32;
 
     for (i = 0; i < LIMB_COUNT; i++) {
         r[i] += t[i] & USED_MASK;
@@ -198,32 +194,39 @@ void fe25519_mul(fe25519 *o, const fe25519 *x, const fe25519 *y) {
     }
 
     for (i = 0; i < FINAL_LIMB; i++) {
-        limb = 19 * t[i + LIMB_COUNT];
-        r[i] += (limb << USED_BITS_DIFF) & USED_MASK;
-        r[i + 1] += (limb >> USED_BITS_FINAL) & USED_MASK;
-        r[i + 2] += limb >> (USED_BITS + USED_BITS_FINAL);
+        limb64 = 19 * t[i + LIMB_COUNT];
+        r[i] += (limb64 << USED_BITS_DIFF) & USED_MASK;
+        r[i + 1] += (limb64 >> USED_BITS_FINAL) & USED_MASK;
+        r[i + 2] += limb64 >> (USED_BITS + USED_BITS_FINAL);
     }
 
-    limb = 19ull * (uint64_t)r[LIMB_COUNT];
-    r[0] += (limb << USED_BITS_DIFF) & USED_MASK;
-    r[1] += (limb >> USED_BITS_FINAL) & USED_MASK;
-    r[2] += limb >> (USED_BITS + USED_BITS_FINAL);
+    limb32 = 19 * r[LIMB_COUNT];
+    r[0] += (limb32 << USED_BITS_DIFF) & USED_MASK;
+    r[1] += limb32 >> USED_BITS_FINAL;
 
-    limb = 19ull * (uint64_t)r[LIMB_COUNT + 1];
-    r[1] += (limb << USED_BITS_DIFF) & USED_MASK;
-    r[2] += (limb >> USED_BITS_FINAL) & USED_MASK;
-    r[3] += limb >> (USED_BITS + USED_BITS_FINAL);
+    limb32 = 19 * r[LIMB_COUNT + 1];
+    r[1] += (limb32 << USED_BITS_DIFF) & USED_MASK;
+    r[2] += limb32 >> USED_BITS_FINAL;
 
     for (i = 0; i < LIMB_COUNT; i++)
         o->v[i] = r[i];
     reduce(o);
 }
 
+void fe25519_mul(fe25519 *o, const fe25519 *x, const fe25519 *y) {
+    int i, j;
+    uint64_t t[LIMB_COUNT_MUL] = {0};
+
+    for (i = 0; i < LIMB_COUNT; i++)
+        for (j = 0; j < LIMB_COUNT; j++)
+            t[i + j] += ((uint64_t)x->v[i]) * y->v[j];
+
+    fe25519_mul_reduce(o, t);
+}
+
 void fe25519_square(fe25519 *o, const fe25519 *x) {
     int i, j;
     uint64_t t[LIMB_COUNT_MUL] = {0};
-    uint32_t r[LIMB_COUNT + 2] = {0};
-    uint64_t limb;
 
     for (i = 0; i < LIMB_COUNT; i++)
         t[i + i] += ((uint64_t)x->v[i]) * x->v[i];
@@ -232,31 +235,7 @@ void fe25519_square(fe25519 *o, const fe25519 *x) {
         for (j = 0; j < i; j++)
             t[i + j] += ((uint64_t)(x->v[i] << 1)) * x->v[j];
 
-    for (i = 0; i < LIMB_COUNT; i++) {
-        r[i] += t[i] & USED_MASK;
-        r[i + 1] += t[i] >> USED_BITS;
-    }
-
-    for (i = 0; i < FINAL_LIMB; i++) {
-        limb = 19 * t[i + LIMB_COUNT];
-        r[i] += (limb << USED_BITS_DIFF) & USED_MASK;
-        r[i + 1] += (limb >> USED_BITS_FINAL) & USED_MASK;
-        r[i + 2] += limb >> (USED_BITS + USED_BITS_FINAL);
-    }
-
-    limb = 19ull * (uint64_t)r[LIMB_COUNT];
-    r[0] += (limb << USED_BITS_DIFF) & USED_MASK;
-    r[1] += (limb >> USED_BITS_FINAL) & USED_MASK;
-    r[2] += limb >> (USED_BITS + USED_BITS_FINAL);
-
-    limb = 19ull * (uint64_t)r[LIMB_COUNT + 1];
-    r[1] += (limb << USED_BITS_DIFF) & USED_MASK;
-    r[2] += (limb >> USED_BITS_FINAL) & USED_MASK;
-    r[3] += limb >> (USED_BITS + USED_BITS_FINAL);
-
-    for (i = 0; i < LIMB_COUNT; i++)
-        o->v[i] = r[i];
-    reduce(o);
+    fe25519_mul_reduce(o, t);
 }
 
 #if 0
