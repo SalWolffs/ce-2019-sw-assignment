@@ -26,6 +26,8 @@ extern const fe25519 fe25519_sqrtm1;
 extern const fe25519 fe25519_msqrtm1;
 extern const fe25519 fe25519_m1;
 
+void fe25519_reduce(fe25519 *r);
+
 void fe25519_freeze(fe25519 *r);
 
 void fe25519_unpack(fe25519 *r, const unsigned char x[32]);

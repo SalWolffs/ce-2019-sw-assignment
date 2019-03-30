@@ -40,7 +40,7 @@ static uint32_t ge(uint32_t a, uint32_t b) { /* 16-bit inputs */
     return x;
 }
 
-static void reduce(fe25519 *r) {
+void fe25519_reduce(fe25519 *r) {
     uint32_t t;
     int i;
 
@@ -58,8 +58,8 @@ static void reduce(fe25519 *r) {
 /* reduction modulo 2^255-19 */
 void fe25519_freeze(fe25519 *r) {
     int i;
-    reduce(r);
-    reduce(r);
+    fe25519_reduce(r);
+    fe25519_reduce(r);
     uint32_t m = ge(r->v[0], FIRST_LIMB_MAX);
     for (i = 1; i < FINAL_LIMB; i++)
         m &= equal(r->v[i], USED_MASK);
@@ -149,14 +149,14 @@ void fe25519_add(fe25519 *r, const fe25519 *x, const fe25519 *y) {
     int i;
     for (i = 0; i < LIMB_COUNT; i++)
         r->v[i] = x->v[i] + y->v[i];
-    reduce(r);
+    fe25519_reduce(r);
 }
 
 void fe25519_double(fe25519 *r, const fe25519 *x) {
     int i;
     for (i = 0; i < LIMB_COUNT; i++)
         r->v[i] = 2 * x->v[i];
-    reduce(r);
+    fe25519_reduce(r);
 }
 
 void fe25519_sub(fe25519 *r, const fe25519 *x, const fe25519 *y) {
@@ -168,7 +168,7 @@ void fe25519_sub(fe25519 *r, const fe25519 *x, const fe25519 *y) {
         t[i] = x->v[i] + (2 * USED_MASK);
     for (i = 0; i < LIMB_COUNT; i++)
         r->v[i] = t[i] - y->v[i];
-    reduce(r);
+    fe25519_reduce(r);
 }
 
 void fe25519_mul_reduce(fe25519 *o, const uint64_t t[]) {
@@ -199,7 +199,7 @@ void fe25519_mul_reduce(fe25519 *o, const uint64_t t[]) {
 
     for (i = 0; i < LIMB_COUNT; i++)
         o->v[i] = r[i];
-    reduce(o);
+    fe25519_reduce(o);
 }
 
 void fe25519_mul(fe25519 *o, const fe25519 *x, const fe25519 *y) {
