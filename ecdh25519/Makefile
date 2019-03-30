@@ -15,4 +15,7 @@ ecdh25519test.elf: fe25519.o fe25519.h group.o group.h smult.o smult.h test.o $(
 ecdh25519speed.elf: fe25519.o fe25519.h group.o group.h smult.o smult.h speed.o $(OBJS) $(LDSCRIPT)
 		$(LD) -o $@ speed.o fe25519.o group.o smult.o $(OBJS) $(LDFLAGS) -l$(LIBNAME)
 
+fe25519_test: fe25519.c fe25519.h fe25519_test.c
+	clang -Wall -Wextra -o $@ fe25519.c fe25519_test.c
+
 include ../common/make.mk
