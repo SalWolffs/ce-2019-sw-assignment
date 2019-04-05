@@ -5,6 +5,9 @@
 
 #define GROUP_GE_PACKEDBYTES 32
 
+#define WINDOWSIZE 1
+#define WINDOWMASK ((1 << WINDOWSIZE) - 1)
+
 typedef struct {
     fe25519 x;
     fe25519 y;
@@ -13,6 +16,7 @@ typedef struct {
 } group_ge;
 
 extern const group_ge group_ge_base;
+extern const group_ge group_ge_neutral;
 
 int group_ge_unpack(group_ge *r, const unsigned char x[GROUP_GE_PACKEDBYTES]);
 void group_ge_pack(unsigned char r[GROUP_GE_PACKEDBYTES], const group_ge *x);

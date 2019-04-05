@@ -1,11 +1,6 @@
 #include "fe25519.h"
 #include <stdio.h>
 
-#if 0
-#define WINDOWSIZE 1 /* Should be 1,2, or 4 */
-#define WINDOWMASK ((1 << WINDOWSIZE) - 1)
-#endif
-
 const fe25519 fe25519_zero = {{0}};
 const fe25519 fe25519_one = {{1}};
 const fe25519 fe25519_two = {{2}};

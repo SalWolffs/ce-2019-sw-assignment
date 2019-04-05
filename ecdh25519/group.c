@@ -256,3 +256,17 @@ void group_ge_double(group_ge *r, const group_ge *x) {
     dbl_p1p1(&t, (ge25519_p2 *)x);
     p1p1_to_p3(r, &t);
 }
+
+void group_ge_add_index(group_ge *gout, const group_ge *gin, size_t index) {
+    uint32_t result[sizeof(group_ge) >> 2];
+    uint32_t *in = (uint32_t*)gin;
+
+    for (size_t i = 0; i < WINDOWMASK + 1; i++) {
+        uint32_t mask = -(((i ^ index) - 1) >> 31);
+        for (size_t j = 0; j < sizeof(group_ge) >> 2; j++) {
+            result[j] |= in[i * (sizeof(group_ge) >> 2) + j] & mask;
+        }
+    }
+
+    group_ge_add(gout, gout, (group_ge*)&result);
+}
