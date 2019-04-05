@@ -1,9 +1,9 @@
 .syntax unified
 .cpu cortex-m4
 
-.global crypto_stream_chacha20_asm
-.type crypto_stream_chacha20_asm, %function
-crypto_stream_chacha20_asm:
+.global crypto_stream_chacha20
+.type crypto_stream_chacha20, %function
+crypto_stream_chacha20:
 	@ r0     output stream pointer
 	@ r1     unused
 	@ r2     output stream length in bytes, lower half

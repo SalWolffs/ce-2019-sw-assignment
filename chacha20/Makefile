@@ -10,11 +10,11 @@ all: chacha20test.bin chacha20test.lst \
 		 chacha20speed.bin chacha20speed.lst
 
 
-chacha20test.elf: chacha20.o $(ASMS) chacha20.h test.o $(OBJS) $(LDSCRIPT)
-		$(LD) -o $@ test.o chacha20.o $(ASMS) $(OBJS) $(LDFLAGS) -l$(LIBNAME)
+chacha20test.elf: $(ASMS) chacha20.h test.o $(OBJS) $(LDSCRIPT)
+		$(LD) -o $@ test.o $(ASMS) $(OBJS) $(LDFLAGS) -l$(LIBNAME)
 
-chacha20speed.elf: chacha20.o $(ASMS) chacha20.h speed.o $(OBJS) $(LDSCRIPT)
-		$(LD) -o $@ speed.o chacha20.o $(ASMS) $(OBJS) $(LDFLAGS) -l$(LIBNAME)
+chacha20speed.elf: $(ASMS) chacha20.h speed.o $(OBJS) $(LDSCRIPT)
+		$(LD) -o $@ speed.o $(ASMS) $(OBJS) $(LDFLAGS) -l$(LIBNAME)
 
 
 include ../common/make.mk
