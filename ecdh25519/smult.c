@@ -15,16 +15,17 @@ int crypto_scalarmult(unsigned char *ss, const unsigned char *sk,
     t[31] &= 127;
     t[31] |= 64;
 
+    if (group_ge_unpack(&k, pk))
+        return -1;
+
     group_ge multiples[WINDOWSIZE + 1];
     multiples[0] = group_ge_neutral;
-    if (group_ge_unpack(multiples + 1, pk))
-        return -1;
+    multiples[1] = k;
 
     for (i = 2; i < WINDOWSIZE + 1; i++) {
         group_ge_add(multiples + i, multiples + i - 1, multiples + 1);
     }
 
-    k = multiples[1];
     for (i = 31; i >= 0; i--) {
         for (; j >= 0; j--) {
             group_ge_double(&k, &k);

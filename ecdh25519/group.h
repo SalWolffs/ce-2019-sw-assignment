@@ -23,5 +23,6 @@ void group_ge_pack(unsigned char r[GROUP_GE_PACKEDBYTES], const group_ge *x);
 
 void group_ge_add(group_ge *r, const group_ge *x, const group_ge *y);
 void group_ge_double(group_ge *r, const group_ge *x);
+void group_ge_add_index(group_ge *gout, const group_ge *gin, int index);
 
 #endif
