@@ -23,7 +23,7 @@ aligned.
 
 We believe that our code is within a factor of 2 from optimal. There are
 probably no gains possible within the inner loop, apart from fully unrolling,
-but some are still possible around it. We reached 16526 cycles for 1024 bytes,
+but some are still possible around it. We reached 16524 cycles for 1024 bytes,
 an improvement factor of 3.
 
 ## poly1305
