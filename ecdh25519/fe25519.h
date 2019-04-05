@@ -3,8 +3,19 @@
 
 #include <stdint.h>
 
+// NOTE: pack and unpack are NOT generalized over the following parameters.
+#define LIMB_COUNT 11
+#define USED_BITS 24
+#define USED_BITS_FINAL 15
+#define LIMB_COUNT_MUL (2 * LIMB_COUNT - 1)
+#define FINAL_LIMB (LIMB_COUNT - 1)
+#define USED_BITS_DIFF (USED_BITS - USED_BITS_FINAL)
+#define USED_MASK ((1 << USED_BITS) - 1)
+#define USED_MASK_FINAL ((1 << USED_BITS_FINAL) - 1)
+#define FIRST_LIMB_MAX (USED_MASK - 18)
+
 typedef struct {
-    uint32_t v[32];
+    uint32_t v[11];
 } fe25519;
 
 extern const fe25519 fe25519_zero;
@@ -14,6 +25,8 @@ extern const fe25519 fe25519_two;
 extern const fe25519 fe25519_sqrtm1;
 extern const fe25519 fe25519_msqrtm1;
 extern const fe25519 fe25519_m1;
+
+void fe25519_reduce(fe25519 *r);
 
 void fe25519_freeze(fe25519 *r);
 
