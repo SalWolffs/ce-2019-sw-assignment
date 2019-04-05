@@ -171,7 +171,7 @@ void fe25519_sub(fe25519 *r, const fe25519 *x, const fe25519 *y) {
     fe25519_reduce(r);
 }
 
-void fe25519_mul_reduce(fe25519 *o, const uint64_t t[]) {
+void fe25519_reduce_mul(fe25519 *o, const uint64_t t[]) {
     int i;
     uint32_t r[LIMB_COUNT + 2] = {0};
     uint64_t limb64;
@@ -210,7 +210,7 @@ void fe25519_mul(fe25519 *o, const fe25519 *x, const fe25519 *y) {
         for (j = 0; j < LIMB_COUNT; j++)
             t[i + j] += ((uint64_t)x->v[i]) * y->v[j];
 
-    fe25519_mul_reduce(o, t);
+    fe25519_reduce_mul(o, t);
 }
 
 void fe25519_square(fe25519 *o, const fe25519 *x) {
@@ -224,7 +224,7 @@ void fe25519_square(fe25519 *o, const fe25519 *x) {
         for (j = 0; j < i; j++)
             t[i + j] += ((uint64_t)(x->v[i] << 1)) * x->v[j];
 
-    fe25519_mul_reduce(o, t);
+    fe25519_reduce_mul(o, t);
 }
 
 #if 0
