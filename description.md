@@ -1,9 +1,30 @@
 # Crypto Engineering Software Assignment
 
-Lars Jellema, s4388747
-Sal Wolffs, s4064542
+- Lars Jellema, s4388747
+- Sal Wolffs, s4064542
 
 ## chacha20
+
+We rewrote chacha20 in assembly. Its state is 16 register in size, while only 14
+registers are available. We minimized swapping by swapping only two registers
+once per round. Each round consists of 16 adds and 16 eors, all of which first
+rotate their second operand into the right position, and a 2-register load
+multiple and store multiple for swapping. We expect that each round takes 38
+cycles, but we didn't verify this. We unrolled 4 rounds because this makes most
+of the rotates add up to 0, reducing the number of correctional rotates needed
+at the end. We expect that fixing these rotates and looping back takes another
+10 cycles, for a total of 810 cycles for 20 rounds.
+
+We didn't spend as much effort on the pre- and post-amble of chacha20. We
+optimized the outer loop of the stream to 5 instructions although this is mostly
+because the chacha20 function does all the heavy lifting. We gained a
+significant number of cycles by making sure the 32-bit instructions were
+aligned.
+
+We believe that our code is within a factor of 2 from optimal. There are
+probably no gains possible within the inner loop, apart from fully unrolling,
+but some are still possible around it. We reached 16526 cycles for 1024 bytes,
+an improvement factor of 3.
 
 ## poly1305
 
