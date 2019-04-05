@@ -114,10 +114,10 @@ slightly below 8 cycles per byte, an improvement factor of 42.
 We rewrote fe25519.c to mostly generalize it over the limb size. We then
 chose 24-bits limbs because they're fairly large and made it easy to convert the
 literals. By rewriting the C to an acceptable limb size, we made it possible to
-rewrite the functions in assembly one by one.
+rewrite the functions in assembly one by one. We updated smult.c to use a window
+size of 4, which also made that part of the code run in constant time. With more
+time, we would have written all of fe25519.c in assembly.
 
-With more time, we would have implemented fixed windows of 4 bits and have
-written all of fe25519.c in assembly.
-
-Just changing the limb size reduced the cycle count from around 45 million to
-around 12 million, about a factor of 3.
+We measure a final improvement in cycle count from around 45 million to around
+12 million, about a factor of 3. There are still many possibilities for further
+optimization, ecdh25519 is too large to fully optimize within 1ec.
