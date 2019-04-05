@@ -5,7 +5,7 @@
 
 #define GROUP_GE_PACKEDBYTES 32
 
-#define WINDOWSIZE 1
+#define WINDOWSIZE 4
 #define WINDOWMASK ((1 << WINDOWSIZE) - 1)
 
 typedef struct {

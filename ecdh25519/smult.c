@@ -5,7 +5,7 @@ int crypto_scalarmult(unsigned char *ss, const unsigned char *sk,
                       const unsigned char *pk) {
     group_ge k;
     unsigned char t[32];
-    int i, j = 5;
+    int i;
 
     for (i = 0; i < 32; i++) {
         t[i] = sk[i];
@@ -26,12 +26,27 @@ int crypto_scalarmult(unsigned char *ss, const unsigned char *sk,
         group_ge_add(multiples + i, multiples + i - 1, &k);
     }
 
-    for (i = 31; i >= 0; i--) {
-        for (; j >= 0; j -= WINDOWSIZE) {
-            group_ge_double(&k, &k);
-            group_ge_add_index(&k, multiples, (t[i] >> j) & WINDOWMASK);
-        }
-        j = 7;
+    group_ge_double(&k, &k);
+    group_ge_double(&k, &k);
+    group_ge_add_index(&k, multiples, (t[31] >> 4) & 3);
+
+    group_ge_double(&k, &k);
+    group_ge_double(&k, &k);
+    group_ge_double(&k, &k);
+    group_ge_double(&k, &k);
+    group_ge_add_index(&k, multiples, t[31] & WINDOWMASK);
+
+    for (i = 30; i >= 0; i--) {
+        group_ge_double(&k, &k);
+        group_ge_double(&k, &k);
+        group_ge_double(&k, &k);
+        group_ge_double(&k, &k);
+        group_ge_add_index(&k, multiples, (t[i] >> 4) & WINDOWMASK);
+        group_ge_double(&k, &k);
+        group_ge_double(&k, &k);
+        group_ge_double(&k, &k);
+        group_ge_double(&k, &k);
+        group_ge_add_index(&k, multiples, t[i] & WINDOWMASK);
     }
 
     group_ge_pack(ss, &k);
